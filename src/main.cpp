@@ -11,10 +11,10 @@ these libraries are required for basic functions and should not be removed
 OTHER LIBRARIES FOR CONNETED DEVICES AND FUNCTIONS
 */
 #include <MD_MAX72xx.h> // include library for control of the MAX7219 (or similar) LED matrices
-#include <FastLED.h> // include library for control of addressable RGB strips with controllers such as the WS2812
+// #include <FastLED.h> // include library for control of addressable RGB strips with controllers such as the WS2812
 
 // define number of LED matrices connected to the system
-#define MAX_DEVICES 7 // should be 7 for one side of the faceplate, 14 for both sides connected
+#define MAX_DEVICES 1 // should be 7 for one side of the faceplate, 14 for both sides connected
 
 // define LED matrix data pins
 #define DATA_PIN D3 // change this to match the data out pin on your board
@@ -25,18 +25,18 @@ OTHER LIBRARIES FOR CONNETED DEVICES AND FUNCTIONS
 MD_MAX72XX mx = MD_MAX72XX(MD_MAX72XX::FC16_HW, DATA_PIN, CLK_PIN, CS_PIN, MAX_DEVICES);
 
 // define the number of LEDs connected on an addressable strip
-#define NUM_LEDS 10
+// #define NUM_LEDS 10
 
 // define the data pin of the addressable LED strip, as well as LED type and color order
-#define DATA_PIN 3 // change this to match the data pin for your board and LED configuration
-#define LED_TYPE WS2812 // change this to match the LEDs on the strip you're using
-#define COLOR_ORDER GRB
+// #define DATA_PIN 3 // change this to match the data pin for your board and LED configuration
+// #define LED_TYPE WS2812 // change this to match the LEDs on the strip you're using
+// #define COLOR_ORDER GRB
 
 // define the FastLED array, using the defined number of LEDS from above
-CRGB leds[NUM_LEDS];
+// CRGB leds[NUM_LEDS];
 
 // define the brightness of the LED strip (should be adjustable between 1 and 255)
-#define BRIGHTNESS 128
+// #define BRIGHTNESS 128
 
 // predefine user specified bitmap image to display (all bitmaps should be 8x8)
 const uint8_t test[8] = { // test bitmap, a lil smiley face :)
@@ -60,9 +60,10 @@ void sendBMP(const uint8_t bitmap[]) {
 // setup code here, runs once upon MCU powerup
 void setup() {
   Serial.begin(9600); // init serial connection with baudrate 9600
-  FastLED.addLeds<LED_TYPE, DATA_PIN, COLOR_ORDER>(leds, NUM_LEDS); // configure FastLED object
-  FastLED.setBrightness(BRIGHTNESS); // set LED strip brightness to predefined value
+  // FastLED.addLeds<LED_TYPE, DATA_PIN, COLOR_ORDER>(leds, NUM_LEDS); // configure FastLED object
+  // FastLED.setBrightness(BRIGHTNESS); // set LED strip brightness to predefined value
   mx.begin();
+  delay(100); // small delay to allow time for the matrix drivers to catch up
   mx.clear(); // clear any content from pre-reset operation
   mx.control(MD_MAX72XX::INTENSITY, 7); // set display brightness to 7, there is probably a shorter function for this
   sendBMP(test); // display test bitmap
@@ -70,12 +71,14 @@ void setup() {
 
 // main code here, runs forever until interrupted
 void loop() {
-  static uint8_t hue = 0; // starting hue of the rainbow gradient
+  // static uint8_t hue = 0; // starting hue of the rainbow gradient
   // apply the gradient color to the LEDs
+  /*
     for(int i = 0; i < NUM_LEDS; i++) {
         leds[i] = CHSV(hue + (i * 10), 255, 255);
     }
   FastLED.show(); // send current color in sequence
   hue++; // change hue to a slightly different value to create a nice gradient sequence
+  */
   delay(20); // loop every 20 milliseconds, to prevent wasted resources
 }
