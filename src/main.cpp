@@ -40,14 +40,14 @@ MD_MAX72XX mx = MD_MAX72XX(MD_MAX72XX::FC16_HW, DATA_PIN, CLK_PIN, CS_PIN, MAX_D
 
 // predefine user specified bitmap image to display (all bitmaps should be 8x8)
 const uint8_t test[8] = { // test bitmap, a lil smiley face :)
-  0b00111100,
+  0b00000000,
   0b01000010,
   0b01000010,
-  0b00011100,
-  0b00111110,
-  0b01000000,
+  0b00000000,
   0b10000001,
-  0b01111110
+  0b10000001,
+  0b01111110,
+  0b00000000
 };
 
 // define function to send bitmaps to the MAX7219 register
