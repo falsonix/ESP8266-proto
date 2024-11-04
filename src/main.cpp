@@ -17,9 +17,9 @@ OTHER LIBRARIES FOR CONNETED DEVICES AND FUNCTIONS
 #define MAX_DEVICES 7 // should be 7 for one side of the faceplate, 14 for both sides connected
 
 // define LED matrix data pins
-#define DATA_PIN 4 // change this to match the data out pin on your board
-#define CLK_PIN 0 // change this to match the clock pin on your board
-#define CS_PIN 2 // change this to match the chip select pin on your board
+#define DATA_PIN D3 // change this to match the data out pin on your board
+#define CLK_PIN D5 // change this to match the clock pin on your board
+#define CS_PIN D8 // change this to match the chip select pin on your board
 
 // define the MAX7219 object, using mx as the quick reference nickname
 MD_MAX72XX mx = MD_MAX72XX(MD_MAX72XX::FC16_HW, DATA_PIN, CLK_PIN, CS_PIN, MAX_DEVICES);
