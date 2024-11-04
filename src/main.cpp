@@ -66,7 +66,8 @@ void setup() {
   delay(100); // small delay to allow time for the matrix drivers to catch up
   mx.clear(); // clear any content from pre-reset operation
   mx.control(MD_MAX72XX::INTENSITY, 7); // set display brightness to 7, there is probably a shorter function for this
-  sendBMP(test); // display test bitmap
+  sendBMP(test); // display test bitmap 
+  mx.transform(MD_MAX72XX::TFUD); // flip bitmap images over, comment this out if your image is upside down
 }
 
 // main code here, runs forever until interrupted
