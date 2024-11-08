@@ -54,7 +54,10 @@ void setup() {
   Serial.println("Matrix intensity set");
   sendBMP(bitmaps);
   Serial.println("Bitmaps sent to matrices");
-  mx.transform(MD_MAX72XX::TFUD); // flip bitmap images over, comment this out if your image is upside down
+  // mx.transform(MD_MAX72XX::TFUD); // flip bitmap images over, comment this out if your image is upside down
+  mx.transform(MD_MAX72XX::TRC); // rotate images 90 degrees
+  delay(50); // 50 msec delay to allow for tasks to be completed
+  mx.transform(MD_MAX72XX::TRC); // rotate images another 90 degrees
   Serial.println("All images transformed");
 }
 
