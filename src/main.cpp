@@ -58,13 +58,28 @@ void sendBMP(const uint8_t bitmaps[MAX_DEVICES][8]) {
   }
 }
 
+// rotation function for setting the matrices to the correct orientation after blinking animation
+void rotateMatrix(int matrixIndex) {
+  mx.transform(matrixIndex, MD_MAX72XX::TRC); // rotate images 90 degrees
+  mx.transform(matrixIndex, MD_MAX72XX::TRC); // rotate images another 90 degrees
+}
+
 // blinking function for the matrices that make up the eyes
 void blink() {
   int blinkTimer = rand() % 7500 + 4000; // sets the blinking timer to anywhere between 4 seconds and 7.5 seconds
   Serial.print("Random blink set to ");
   Serial.println(blinkTimer); // print some text to the console followed by the millisecond value of the blink timer (left in ms since i doubt this would be used much)
   delay(blinkTimer); // delay for the randomly generated time
+
+  mx.control(rightEye1, MD_MAX72XX::INTENSITY, 0); // set display brightness to 0 to turn off the matrix
+  mx.control(rightEye2, MD_MAX72XX::INTENSITY, 0); // set display brightness to 0 to turn off the matrix
+
+  delay(100); // delay for 100 msec to allow the human eye to see the change
+
+  mx.control(rightEye1, MD_MAX72XX::INTENSITY, 2); // set display brightness to 0 to turn off the matrix
+  mx.control(rightEye2, MD_MAX72XX::INTENSITY, 2); // set display brightness to 0 to turn off the matrix
   // clear only the matrices that need to be turned off for blinking
+  /*
   mx.clear(rightEye1);
   mx.clear(rightEye2);
   // send blinking frame to the specific matrices (using the blinkmaps array instead of sendbmp since we only want to update the eyes)
@@ -81,6 +96,10 @@ void blink() {
     mx.setRow(rightEye1, row, bitmaps[rightEye1][row]);
     mx.setRow(rightEye2, row, bitmaps[rightEye2][row]);
   }
+  // rotate the matrices back to the intended orientation
+  rotateMatrix(rightEye1);
+  rotateMatrix(rightEye2);
+  */
 }
 
 // setup code here, runs once upon MCU powerup
