@@ -40,7 +40,7 @@ const uint8_t blinkmaps[MAX_DEVICES][8] = {
   {0b00001111, 0b01111111, 0b11111001, 0b11110000, 0b10000000, 0b00000000, 0b00000000, 0b00000000}, // Rmouth2
   {0b00000000, 0b11000000, 0b11110000, 0b01111100, 0b00001111, 0b00000011, 0b00000001, 0b00000000}, // Rmouth3
   {0b00000001, 0b00000011, 0b00001111, 0b00011110, 0b00111100, 0b11111000, 0b11100000, 0b00000000}, // Rmouth4
-  {0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b10000000, 0b00000000, 0b00000000, 0b00000000}, // Reye1 (blank)
+  {0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000}, // Reye1 (blank)
   {0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000}, // Reye2 (blank)
   {0b01111110, 0b00111111, 0b00000011, 0b00000011, 0b00000001, 0b00000000, 0b00000000, 0b00000000} // Rnose1
 };
@@ -67,7 +67,7 @@ void blink() {
   // bitmaps sent reverse for me so i rotate them twice
   mx.transform(MD_MAX72XX::TRC); // rotate images 90 degrees
   mx.transform(MD_MAX72XX::TRC); // rotate images another 90 degrees
-  delay(250); // delay for 250 msec to allow the human eye to see the change
+  delay(100); // delay for 100 msec to allow the human eye to see the change
   mx.clear(); // clear blinking frame off of the registers
   sendBMP(bitmaps); // resend normal bitmaps to the matrices
   // gotta rotate again
