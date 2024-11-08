@@ -25,13 +25,13 @@ MD_MAX72XX mx = MD_MAX72XX(MD_MAX72XX::FC16_HW, DATA_PIN, CLK_PIN, CS_PIN, MAX_D
 
 // define bitmaps to send to displays (in order)
 const uint8_t bitmaps[MAX_DEVICES][8] = {
-  {0b00000000, 0b01000010, 0b01000010, 0b00000000, 0b10000001, 0b10000001, 0b01111110, 0b00000000}, // test1
-  {0b00000000, 0b01100110, 0b01100110, 0b00000000, 0b10011001, 0b10011001, 0b10011001, 0b01100110}, // test2
-  {0b00000000, 0b01000010, 0b01000010, 0b00000000, 0b10000001, 0b10000001, 0b01111110, 0b00000000}, // test1
-  {0b00000000, 0b01100110, 0b01100110, 0b00000000, 0b10011001, 0b10011001, 0b10011001, 0b01100110}, // test2
-  {0b00000000, 0b01000010, 0b01000010, 0b00000000, 0b10000001, 0b10000001, 0b01111110, 0b00000000}, // test1
-  {0b00000000, 0b01100110, 0b01100110, 0b00000000, 0b10011001, 0b10011001, 0b10011001, 0b01100110}, // test2
-  {0b00000000, 0b01000010, 0b01000010, 0b00000000, 0b10000001, 0b10000001, 0b01111110, 0b00000000} // test1
+  {0b00000000, 0b01000010, 0b01000010, 0b00000000, 0b10000001, 0b10000001, 0b01111110, 0b00000000}, // mouth1
+  {0b00000000, 0b01100110, 0b01100110, 0b00000000, 0b10011001, 0b10011001, 0b10011001, 0b01100110}, // mouth2
+  {0b00000000, 0b01000010, 0b01000010, 0b00000000, 0b10000001, 0b10000001, 0b01111110, 0b00000000}, // mouth3
+  {0b00000000, 0b01100110, 0b01100110, 0b00000000, 0b10011001, 0b10011001, 0b10011001, 0b01100110}, // mouth4
+  {0b00000000, 0b01000010, 0b01000010, 0b00000000, 0b10000001, 0b10000001, 0b01111110, 0b00000000}, // eye1
+  {0b00000000, 0b01100110, 0b01100110, 0b00000000, 0b10011001, 0b10011001, 0b10011001, 0b01100110}, // eye2
+  {0b00000000, 0b01000010, 0b01000010, 0b00000000, 0b10000001, 0b10000001, 0b01111110, 0b00000000} // nose1
 };
 
 // define function to send bitmaps to the MAX7219 register
@@ -45,13 +45,17 @@ void sendBMP(const uint8_t bitmaps[MAX_DEVICES][8]) {
 
 // setup code here, runs once upon MCU powerup
 void setup() {
-  Serial.begin(9600); // init serial connection with baudrate 9600
+  Serial.begin(9600); // init serial connection with baudrate 9600 for debugging purposes
   mx.begin();
+  Serial.println("Matrix bootup command sent");
   delay(100); // small delay to allow time for the matrix drivers to catch up
   mx.clear(); // clear any content from pre-reset operation
-  mx.control(MD_MAX72XX::INTENSITY, 7); // set display brightness to 7, there is probably a shorter function for this
+  mx.control(MD_MAX72XX::INTENSITY, 2); // set display brightness, there is probably a shorter function for this
+  Serial.println("Matrix intensity set");
   sendBMP(bitmaps);
+  Serial.println("Bitmaps sent to matrices");
   mx.transform(MD_MAX72XX::TFUD); // flip bitmap images over, comment this out if your image is upside down
+  Serial.println("All images transformed");
 }
 
 // main code here, runs forever until interrupted
