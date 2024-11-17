@@ -11,14 +11,19 @@ these libraries are required for basic functions and should not be removed
 OTHER LIBRARIES FOR CONNETED DEVICES AND FUNCTIONS
 */
 #include <MD_MAX72xx.h> // include library for control of the MAX7219 (or similar) LED matrices
+#include <FastLED.h> // include library for control of the WS2812B LED strips
+
+////////////////////////////////////////////////////////
+///////////// Config section: LED matrices /////////////
+////////////////////////////////////////////////////////
 
 // define number of LED matrices connected to the system
 #define MAX_DEVICES 7 // should be 7 for one side of the faceplate, 14 for both sides connected
 
 // define LED matrix data pins
-#define DATA_PIN D3 // change this to match the data out pin on your board
-#define CLK_PIN D5 // change this to match the clock pin on your board
-#define CS_PIN D8 // change this to match the chip select pin on your board
+#define DATA_PIN D3 // change this to match the data out pin you're using
+#define CLK_PIN D5 // change this to match the clock pin you're using
+#define CS_PIN D8 // change this to match the chip select pin you're using
 
 // define the MAX7219 object, using mx as the quick reference nickname
 MD_MAX72XX mx = MD_MAX72XX(MD_MAX72XX::FC16_HW, DATA_PIN, CLK_PIN, CS_PIN, MAX_DEVICES);
@@ -37,6 +42,34 @@ const uint8_t bitmaps[MAX_DEVICES][8] = {
   {0b11110000, 0b11111100, 0b11111111, 0b01111111, 0b00111111, 0b00011110, 0b00000000, 0b00000000}, // Reye2
   {0b01111110, 0b00111111, 0b00000011, 0b00000011, 0b00000001, 0b00000000, 0b00000000, 0b00000000} // Rnose1
 };
+
+////////////////////////////////////////////////////////
+/////// Config section: Addressable LED strips /////////
+////////////////////////////////////////////////////////
+
+// define the type of addressable LED strip you're using
+#define LED_TYPE WS2812B // change this to match the type of LED strip you're using
+
+// define the color order of the LEDs
+#define COLOR_ORDER GRB // change this to match the color order of your LED strip
+
+// define the data pin of the addressable LED strip
+#define LED_PIN D0 // change this to match the data out pin you're using
+
+// define the number of LEDs in the strip
+#define NUM_LEDS 60 // change this to match the number of LEDs in your strip
+
+// define the brightness of the LED strip
+#define BRIGHTNESS 125 // change this to adjust the brightness of the LEDs, 0-255
+
+// define the LED strip object, using leds as the quick reference nickname
+CRGB leds[NUM_LEDS];
+
+// quick setup function to initialize the LED strip
+void setupLEDs() {
+  FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
+  FastLED.setBrightness(BRIGHTNESS);
+}
 
 // define function to send bitmaps to the MAX7219 registers
 void sendBMP(const uint8_t bitmaps[MAX_DEVICES][8]) {
