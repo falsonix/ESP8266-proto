@@ -17,6 +17,9 @@ OTHER LIBRARIES FOR CONNETED DEVICES AND FUNCTIONS
 ///////////// Config section: LED matrices /////////////
 ////////////////////////////////////////////////////////
 
+// change this to adjust the brightness of the LED matrices (i think the values range from 0 to 10 but idk)
+const int matrixBrightness = 2,
+
 // define number of LED matrices connected to the system
 #define MAX_DEVICES 7 // should be 7 for one side of the faceplate, 14 for both sides connected
 
@@ -65,10 +68,16 @@ const uint8_t bitmaps[MAX_DEVICES][8] = {
 // define the LED strip object, using leds as the quick reference nickname
 CRGB leds[NUM_LEDS];
 
-// quick setup function to initialize the LED strip
+// quick setup function to streamline the LED strip
 void setupLEDs() {
   FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
   FastLED.setBrightness(BRIGHTNESS);
+}
+
+// little function for changing the hue of the rainbow gradient (if seleced)
+void runGradient() {
+  // calculate the current hue based on the previous one but changed slightly
+  // send hue to the RGB strips
 }
 
 // define function to send bitmaps to the MAX7219 registers
@@ -101,23 +110,26 @@ void blink() {
 
 // setup code here, runs once upon MCU powerup
 void setup() {
+  // i decided to add serial support for debugging but not too high of a baudrate that would slow down the MCU
   Serial.begin(9600); // init serial connection with baudrate 9600 for debugging purposes
+  setupLEDs(); // run the setup function to init the addressable LEDs
   srand(static_cast<unsigned>(time(0))); // seed the random blink timer generator (only runs once)
-  mx.begin();
-  Serial.println("Matrix bootup command sent");
+  mx.begin(); // begin connection with the matrix drivers
+  Serial.println("Matrix bootup command sent"); // report serial status
   delay(100); // small delay to allow time for the matrix drivers to catch up
   mx.clear(); // clear any content from pre-reset operation
-  mx.control(MD_MAX72XX::INTENSITY, 2); // set display brightness, there is probably a shorter function for this
-  Serial.println("Matrix intensity set");
-  sendBMP(bitmaps);
-  Serial.println("Bitmaps sent to matrices");
-  // mx.transform(MD_MAX72XX::TFUD); // flip bitmap images over, comment this out if your image is upside down
+  mx.control(MD_MAX72XX::INTENSITY, matrixBrightness); // set display brightness
+  Serial.println("Matrix intensity set"); // report serial status
+  sendBMP(bitmaps); // send bitmaps to the matrices
+  Serial.println("Bitmaps sent to matrices"); // report serial status
+  // during testing for my setup the matrix images were upside down, comment out the below line if this causes bad results
   rotateMatrix(); // rotate the images to the correct orientation
-  Serial.println("All images transformed");
+  Serial.println("All images transformed"); // report serial status
 }
 
 // main code here, runs forever until interrupted
 void loop() {
   delay(20); // loop every 20 milliseconds, to prevent wasted resources
-  blink(); // run blinking function
+  blink(); // run blinking function for the eye matrices
+  runGradient(); // adjust and send the rainbow gradient to the LED strip(s)
 }
