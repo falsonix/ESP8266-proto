@@ -96,8 +96,15 @@ const long interval = 10000; // interval at which to check the battery voltage
 // function to read battery voltage (hopefully)
 float readBatteryVoltage() {
   int raw = analogRead(A0); // read the raw value from the analog pin
-  float voltage = raw * (3.3 / 1023.0) * 2; // convert the raw value to a voltage
-  return voltage; // return the voltage value
+  float voltage = raw * (3.3 / 1023.0); // convert the raw value to a voltage
+
+  // adjust for voltage divider
+  float R1 = 100000; // internal 100k resistor
+  float R2 = 220000; // internal 220k resistor
+  float R3 = 180000; // external 180k resistor
+
+  float batteryVoltage = voltage * ((R1 + R2 + R3) / R3); // calculate the battery voltage
+  return batteryVoltage; // return the voltage value
 }
 
 // ---------------------------------------------------------------------------
