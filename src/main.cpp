@@ -18,7 +18,7 @@ OTHER LIBRARIES FOR CONNETED DEVICES AND FUNCTIONS
 ////////////////////////////////////////////////////////
 
 // change this to adjust the brightness of the LED matrices (i think the values range from 0 to 10 but idk)
-const int matrixBrightness = 2,
+const int matrixBrightness = 2;
 
 // define number of LED matrices connected to the system
 #define MAX_DEVICES 7 // should be 7 for one side of the faceplate, 14 for both sides connected
@@ -74,10 +74,69 @@ void setupLEDs() {
   FastLED.setBrightness(BRIGHTNESS);
 }
 
-// little function for changing the hue of the rainbow gradient (if seleced)
+// global hue value for the gradient
+uint8_t hue = 0;
+
+// little function for changing the hue of the rainbow gradient (if selected)
 void runGradient() {
-  // calculate the current hue based on the previous one but changed slightly
-  // send hue to the RGB strips
+  fill_rainbow(leds, NUM_LEDS, hue, 7); // fill the LED strip with a rainbow gradient
+  FastLED.show(); // send the gradient to the LED strip
+  hue++; // increment the hue value for the next cycle
+}
+
+////////////////////////////////////////////////////////
+/////// Config section: Miscellaneous Items ////////////
+////////////////////////////////////////////////////////
+
+bool batteryLow = false; // boolean value to alert the user if the battery is low
+
+unsigned long previousMillis = 0; // most recent battery voltage check
+const long interval = 10000; // interval at which to check the battery voltage
+
+// function to read battery voltage (hopefully)
+float readBatteryVoltage() {
+  int raw = analogRead(A0); // read the raw value from the analog pin
+  float voltage = raw * (3.3 / 1023.0) * 2; // convert the raw value to a voltage
+  return voltage; // return the voltage value
+}
+
+// ---------------------------------------------------------------------------
+
+// function to only check the battery voltage every 10 seconds
+// i decided on 10 seconds because battery voltage doesnt need to be checked every 20ms
+void checkBatteryVoltage() {
+  unsigned long currentMillis = millis(); // get the current time
+  if (currentMillis - previousMillis >= interval) { // check if the interval has passed
+    previousMillis = currentMillis; // set the previous time to the current time
+    float voltage = readBatteryVoltage(); // read the battery voltage
+    Serial.print("Battery voltage: "); // print header text to serial
+    Serial.print(voltage); // print the battery voltage
+    Serial.println("V"); // print followup text to serial
+
+    // if battery is too low then throw an alert
+    if (voltage < 3.3) { // check if the battery voltage is below 3.3V
+      batteryLow = true; // set the battery low variable to true
+      Serial.print("Battery low!"); // print battery low message to serial
+    }
+  }
+}
+
+void ledControl() {
+  // check if the battery is low, if so then have a fading in/out red light across the LEDs
+  if (batteryLow) {
+    for (int i = 0; i < NUM_LEDS; i++) {
+      leds[i] = CRGB::Red; // set the LED to red
+      FastLED.show(); // send the LED data to the strip
+      delay(10); // delay for 10 milliseconds
+    }
+    for (int i = NUM_LEDS - 1; i >= 0; i--) {
+      leds[i] = CRGB::Black; // set the LED to black
+      FastLED.show(); // send the LED data to the strip
+      delay(10); // delay for 10 milliseconds
+    }
+  } else {
+    runGradient(); // run the rainbow gradient function
+  }
 }
 
 // define function to send bitmaps to the MAX7219 registers
@@ -112,6 +171,7 @@ void blink() {
 void setup() {
   // i decided to add serial support for debugging but not too high of a baudrate that would slow down the MCU
   Serial.begin(9600); // init serial connection with baudrate 9600 for debugging purposes
+  pinMode(A0, INPUT); // set the analog pin as an input
   setupLEDs(); // run the setup function to init the addressable LEDs
   srand(static_cast<unsigned>(time(0))); // seed the random blink timer generator (only runs once)
   mx.begin(); // begin connection with the matrix drivers
@@ -131,5 +191,6 @@ void setup() {
 void loop() {
   delay(20); // loop every 20 milliseconds, to prevent wasted resources
   blink(); // run blinking function for the eye matrices
-  runGradient(); // adjust and send the rainbow gradient to the LED strip(s)
+  ledControl(); // run all needed functions for LED display
+  checkBatteryVoltage(); // check the battery voltage if 10 seconds have passed
 }
